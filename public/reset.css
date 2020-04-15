@@ -21,7 +21,8 @@ h2,
 h3,
 h4,
 h5,
-h6 {
+h6,
+label {
   margin: 0;
   padding: 0;
 }
@@ -78,3 +79,11 @@ th {
 td:not([align]),
 th:not([align]) {
   text-align: left;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  width: 100%;
+}
