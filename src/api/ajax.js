@@ -1,24 +1,29 @@
+import resolve from 'resolve';
+import {message} from 'antd';
+
 const axios = require('axios');
 
-class Ajax {
-    constructor(url, params={}, method="GET"){
-        this.baseUrl = "http://localhost:3002";
-        this.method = method;
-        this.url = this.baseUrl + url;
-        this.params = params;
-        this.sendRequest();
-    }
-
-    sendRequest(){
-        let promise;
-        if(this.method === "GET") {
-            console.log(this.url, this.params);
-            promise = axios.get(this.url, this.params);
-        } else if(this.method === "POST") {
-            promise = axios.post(this.url, this.params);
+const sendRequest = (url, params={}, method='GET') => {
+    new Promise((resolve, reject) => {
+        let promise
+        const baseUrl = 'http://localhost:3002'
+        url = `${baseUrl}${url}`
+        switch(method) {
+            case 'GET':
+                promise = axios.get(url, {
+                    params: params
+                })
+            case 'POST':
+                promise = axios.post(url, {
+                    params: params
+                })
         }
-        return promise;
-    }
+        promise.then(response => {
+            resolve(response)
+        }).catch(error =>{
+            // message.error(error.message)
+        })
+    })
 }
 
-export default Ajax;
+export default sendRequest

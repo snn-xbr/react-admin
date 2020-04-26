@@ -1,35 +1,43 @@
-import React, { Component } from 'react';
-import './login.css';
-import logo from '../../assets/images/logo.jpg';
-import { Form, Input, Button } from 'antd';
-import loginAjax from '../../api/loginAjax.js';
+import React, { Component } from 'react'
+import './login.css'
+import logo from '../../assets/images/logo.jpg'
+import { Form, Input, Button, message } from 'antd'
+import { reqLogin } from '../../api/index.js'
 
-const Login = () => {
-    const [form] = Form.useForm();
-    const layout = {
-        labelCol: {
-            span: 8,
-        },
-        wrapperCol: {
-            span: 16,
-        },
-    };
-    const tailLayout = {
-        wrapperCol: {
-            offset: 8,
-            span: 16,
-        },
-    };
+const layout = {
+    labelCol: { span: 8 },
+    wrapperCol: { span: 16 },
+  }
+const tailLayout = {
+    wrapperCol: { offset: 8, span: 16 },
+}
 
-    const handleLogin = () => {
-        const name = form.getFieldValue("username");
-        const pwd = form.getFieldValue("password")
-        // const ajax = new Ajax("GET", "http://localhost:3001", {name: name, password: pwd});
-        // ajax.sendRequest();
-        loginAjax(name, pwd);
+export default class Login extends Component {
+    formRef = React.createRef();
+    constructor(props) {
+        super(props)
     }
 
-    return (
+    handleLogin = async() => {
+        const username = this.formRef.current.getFieldValue("username")
+        const password = this.formRef.current.getFieldValue("password")
+        let response = await reqLogin(username, password)
+        let result = response && response.data
+
+        // dummy data
+        result === undefined && (result = {
+            status: 0,
+            data: []
+        })
+
+        if(result.status === 0) {
+            message.success('登录成功!')
+            this.props.history.push('/admin')
+        }
+    }
+
+    render() {
+        return(
         <div className="login">
             <div className="login-header">
                 <img src={logo} alt="logo" className="logo" />
@@ -39,12 +47,9 @@ const Login = () => {
                 <h2>登录界面</h2>
                 <Form
                     {...layout}
-                    name="basic"
-                    initialValues={{
-                        remember: true,
-                    }}
-                    form={form}
-                    onFinish={handleLogin}
+                    name="control-ref"
+                    ref={this.formRef}
+                    onFinish={this.onFinish}
                 >
                 <Form.Item
                     label="Username"
@@ -91,14 +96,13 @@ const Login = () => {
                 </Form.Item>
 
                 <Form.Item {...tailLayout}>
-                    <Button style={{backgroundColor: "teal"}} htmlType="submit">
+                    <Button style={{backgroundColor: "teal"}} onClick={this.handleLogin}>
                         Submit
                     </Button>
                 </Form.Item>
                 </Form>
             </section>
         </div>
-    )
+        )
+    }
 }
-
-export default Login;
